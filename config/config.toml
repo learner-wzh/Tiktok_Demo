@@ -1,0 +1,20 @@
+#关系型数据库配置
+[mysql]
+host = "121.41.102.241"
+port = 3306
+database = "tiktok"
+username = "root"
+password = "123456"
+charset = "utf8mb4"
+parse_time = true
+loc = "Local"
+
+#记录当前服务器的ip和启动端口号，当前服务器的ip用于生成对应的视频链接地址
+[server]
+ip = "121.41.102.241"
+port = 8080
+
+#用于保存资源的路径，以及用于截图工具的路径（截图工具放在lib目录
+[path]
+ffmpeg_path = "ffmpeg"
+static_source_path = "/home/ubuntu/goland_pro/byte_douyin_project/static"

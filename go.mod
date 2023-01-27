@@ -5,6 +5,7 @@ go 1.19
 require github.com/gin-gonic/gin v1.8.2
 
 require (
+	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
