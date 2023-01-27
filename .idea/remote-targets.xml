@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <targets>
+      <target name="root@121.41.102.241:22" type="ssh/sftp" uuid="c3d255d7-37b1-4a67-9806-1c116782c257">
+        <config>
+          <option name="projectRootOnTarget" value="/root/Tiktok_demo" />
+          <option name="serverName" value="root@121.41.102.241:22 password" />
+        </config>
+        <ContributedStateBase type="GoLanguageRuntime">
+          <config>
+            <option name="compiledExecutablesVolume">
+              <VolumeState>
+                <option name="remotePath" value="/root/demo" />
+              </VolumeState>
+            </option>
+            <option name="goPath" value="/usr/local/dev/go" />
+            <option name="goRoot" value="/usr/local/go/bin/go" />
+            <option name="goVersion" value="go1.16.3 linux/amd64" />
+            <option name="projectSourcesVolume">
+              <VolumeState>
+                <option name="remotePath" value="/root/demo" />
+              </VolumeState>
+            </option>
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>

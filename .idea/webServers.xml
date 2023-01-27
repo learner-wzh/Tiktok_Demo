@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="b22a4a9f-93d1-4968-bae1-075658091244" name="Tiktok">
+        <fileTransfer rootFolder="/root/Tiktok_demo" accessType="SFTP" host="121.41.102.241" port="22" sshConfigId="6d560359-ff20-445d-ace1-f1665e6f1c9c" sshConfig="root@121.41.102.241:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
