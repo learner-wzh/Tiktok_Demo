@@ -15,4 +15,6 @@ func main() {
 
 	//3.监听端口，默认8080
 	r.Run(":8080")
+
+	// fmt.Println(config.DBConnectString())
 }

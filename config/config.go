@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"github.com/BurntSushi/toml"
+	"log"
 	"strings"
 )
 
@@ -42,4 +44,13 @@ func init() {
 	//去除左右的空格
 	strings.Trim(Info.Server.IP, " ")
 	strings.Trim(Info.DB.Host, " ")
+}
+
+// DBConnectString 填充得到数据库连接字符串
+func DBConnectString() string {
+	arg := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=%v&loc=%s",
+		Info.DB.Username, Info.DB.Password, Info.DB.Host, Info.DB.Port, Info.DB.Database,
+		Info.DB.Charset, Info.DB.ParseTime, Info.DB.Loc)
+	log.Println(arg)
+	return arg
 }
