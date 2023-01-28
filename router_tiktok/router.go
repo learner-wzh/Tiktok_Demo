@@ -3,9 +3,11 @@ package router_tiktok
 import (
 	"github.com/gin-gonic/gin"
 	"tiktok_Demo/controllers/basic"
+	"tiktok_Demo/models"
 )
 
 func InitRouter() *gin.Engine {
+	models.InitDB()
 
 	r := gin.Default()
 
@@ -16,7 +18,7 @@ func InitRouter() *gin.Engine {
 	// 基础接口
 	apiRouter.GET("/feed/")
 	apiRouter.GET("/user/")
-	apiRouter.POST("/user/register/")
+	apiRouter.POST("/user/register/", basic.Register)
 	apiRouter.POST("/user/login/", basic.Login)
 	apiRouter.POST("/publish/action/")
 	apiRouter.GET("/publish/list/")

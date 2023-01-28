@@ -19,4 +19,8 @@ func InitDB() {
 		panic(err)
 	}
 
+	sqlDB, _ := DB.DB()
+
+	// 设置数据库连接池
+	sqlDB.SetMaxOpenConns(10)
 }
