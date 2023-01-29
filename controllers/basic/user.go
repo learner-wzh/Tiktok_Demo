@@ -1,7 +1,6 @@
 package basic
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"tiktok_Demo/models"
@@ -22,9 +21,20 @@ func Register(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 
-	token := username + password
+	mes, userIdSequence := models.UserRegister(username, password)
 
-	fmt.Println(token)
+	if mes {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{StatusCode: 0},
+			UserId:   userIdSequence,
+			Token:    username + password,
+		})
+	} else {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{StatusCode: 1, StatusMsg: "User already exist"},
+		})
+	}
+
 }
 
 func Login(c *gin.Context) {
@@ -35,11 +45,17 @@ func Login(c *gin.Context) {
 
 	user := models.UserLogin(username, password)
 
-	c.JSON(http.StatusOK, UserLoginResponse{
-		Response: Response{StatusCode: 0},
-		UserId:   int64(user.UserID),
-		Token:    token,
-	})
+	mes := user.UserName + user.UserPwd
 
-	fmt.Println(token)
+	if token == mes {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{StatusCode: 0},
+			UserId:   user.UserID,
+			Token:    token,
+		})
+	} else {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+		})
+	}
 }
