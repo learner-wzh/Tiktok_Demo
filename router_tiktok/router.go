@@ -16,8 +16,8 @@ func InitRouter() *gin.Engine {
 	apiRouter := r.Group("/douyin")
 
 	// 基础接口
-	apiRouter.GET("/feed/")
-	apiRouter.GET("/user/")
+	apiRouter.GET("/feed/", basic.Feed)
+	apiRouter.GET("/user/", basic.UserInfo)
 	apiRouter.POST("/user/register/", basic.Register)
 	apiRouter.POST("/user/login/", basic.Login)
 	apiRouter.POST("/publish/action/")

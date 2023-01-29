@@ -1,6 +1,7 @@
 package basic
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"tiktok_Demo/models"
@@ -11,10 +12,23 @@ type Response struct {
 	StatusMsg  string `json:"status_msg,omitempty"`
 }
 
+type User struct {
+	Id            int64  `json:"id,omitempty"`
+	Name          string `json:"name,omitempty"`
+	FollowCount   int64  `json:"follow_count,omitempty"`
+	FollowerCount int64  `json:"follower_count,omitempty"`
+	IsFollow      bool   `json:"is_follow,omitempty"`
+}
+
 type UserLoginResponse struct {
 	Response
 	UserId int64  `json:"user_id,omitempty"`
 	Token  string `json:"token"`
+}
+
+type UserResponse struct {
+	Response
+	User User `json:"user"`
 }
 
 func Register(c *gin.Context) {
@@ -58,4 +72,14 @@ func Login(c *gin.Context) {
 			Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		})
 	}
+}
+
+func UserInfo(c *gin.Context) {
+	token := c.Query("token")
+
+	fmt.Println(token)
+	c.JSON(http.StatusOK, UserResponse{
+		Response: Response{StatusCode: 0},
+		User:     User{Id: 1, Name: "wzh", FollowCount: 10, FollowerCount: 10, IsFollow: true},
+	})
 }
