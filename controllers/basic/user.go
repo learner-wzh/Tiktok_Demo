@@ -1,7 +1,6 @@
 package basic
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"tiktok_Demo/models"
@@ -12,18 +11,18 @@ type Response struct {
 	StatusMsg  string `json:"status_msg,omitempty"`
 }
 
+type UserLoginResponse struct {
+	Response
+	UserId int64  `json:"user_id,omitempty"`
+	Token  string `json:"token"`
+}
+
 type User struct {
 	Id            int64  `json:"id,omitempty"`
 	Name          string `json:"name,omitempty"`
 	FollowCount   int64  `json:"follow_count,omitempty"`
 	FollowerCount int64  `json:"follower_count,omitempty"`
 	IsFollow      bool   `json:"is_follow,omitempty"`
-}
-
-type UserLoginResponse struct {
-	Response
-	UserId int64  `json:"user_id,omitempty"`
-	Token  string `json:"token"`
 }
 
 type UserResponse struct {
@@ -55,11 +54,11 @@ func Login(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 
-	token := username + password
+	token := username + "-" + password
 
 	user := models.UserLogin(username, password)
 
-	mes := user.UserName + user.UserPwd
+	mes := user.UserName + "-" + user.UserPwd
 
 	if token == mes {
 		c.JSON(http.StatusOK, UserLoginResponse{
@@ -77,9 +76,10 @@ func Login(c *gin.Context) {
 func UserInfo(c *gin.Context) {
 	token := c.Query("token")
 
-	fmt.Println(token)
+	user := models.UserSearch(token)
+
 	c.JSON(http.StatusOK, UserResponse{
 		Response: Response{StatusCode: 0},
-		User:     User{Id: 1, Name: "wzh", FollowCount: 10, FollowerCount: 10, IsFollow: true},
+		User:     User{Id: user.UserID, Name: user.UserName, FollowCount: user.UserFollowCount, FollowerCount: user.UserFollowerCount, IsFollow: true},
 	})
 }
