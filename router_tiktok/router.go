@@ -21,7 +21,7 @@ func InitRouter() *gin.Engine {
 	apiRouter.POST("/user/register/", basic.Register)
 	apiRouter.POST("/user/login/", basic.Login)
 	apiRouter.POST("/publish/action/")
-	apiRouter.GET("/publish/list/")
+	apiRouter.GET("/publish/list/", basic.PublishList)
 
 	// 互动接口
 	apiRouter.POST("/favorite/action/")

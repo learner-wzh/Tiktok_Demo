@@ -1,6 +1,6 @@
 package models
 
-type Users struct {
+type UserModel struct {
 	UserID            int64  `gorm:"column:ID"`            // 用户id
 	UserName          string `gorm:"column:Name"`          // 用户名称
 	UserPwd           string `gorm:"column:Pwd"`           // 用户密码
@@ -8,19 +8,19 @@ type Users struct {
 	UserFollowerCount int64  `gorm:"column:FollowerCount"` // 用户粉丝数
 }
 
-func (value Users) TableName() string {
+func (value UserModel) TableName() string {
 	return "users"
 }
 
 func UserRegister(Name string, Pwd string) (bool, int64) {
 
-	var user Users
+	var user UserModel
 
 	DB.Select("ID, `Name`").Where("`Name` = ?", Name).First(&user)
 
 	if user.UserID == 0 {
 
-		InsertUser := Users{UserName: Name, UserPwd: Pwd}
+		InsertUser := UserModel{UserName: Name, UserPwd: Pwd}
 		DB.Create(&InsertUser)
 
 		return true, InsertUser.UserID
@@ -30,9 +30,9 @@ func UserRegister(Name string, Pwd string) (bool, int64) {
 
 }
 
-func UserLogin(Name string, Pwd string) Users {
+func UserLogin(Name string, Pwd string) UserModel {
 
-	var user Users
+	var user UserModel
 
 	DB.Select("ID, `Name`, Pwd").Where("`Name` = ? AND Pwd = ?", Name, Pwd).Take(&user)
 

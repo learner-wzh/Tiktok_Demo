@@ -3,30 +3,16 @@ package basic
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"tiktok_Demo/json_response"
+	"tiktok_Demo/models"
 	"time"
 )
 
-type Video struct {
-	Id            int64  `json:"id,omitempty"`
-	Author        User   `json:"author"`
-	PlayUrl       string `json:"play_url" json:"play_url,omitempty"`
-	CoverUrl      string `json:"cover_url,omitempty"`
-	FavoriteCount int64  `json:"favorite_count,omitempty"`
-	CommentCount  int64  `json:"comment_count,omitempty"`
-	IsFavorite    bool   `json:"is_favorite,omitempty"`
-}
-
-type FeedResponse struct {
-	Response
-	VideoList []Video `json:"video_list,omitempty"`
-	NextTime  int64   `json:"next_time,omitempty"`
-}
-
-var DemoVideos = []Video{
+var DemoVideos = []json_response.Video{
 	{
 		Id:            1,
 		Author:        DemoUser,
-		PlayUrl:       "https://klxxcdn.oss-cn-hangzhou.aliyuncs.com/histudy/hrm/media/bg2.mp4",
+		PlayUrl:       "https://www.w3schools.com/html/movie.mp4",
 		CoverUrl:      "https://cdn.pixabay.com/photo/2016/03/27/18/10/bear-1283347_1280.jpg",
 		FavoriteCount: 0,
 		CommentCount:  0,
@@ -34,7 +20,7 @@ var DemoVideos = []Video{
 	},
 }
 
-var DemoUser = User{
+var DemoUser = json_response.User{
 	Id:            1,
 	Name:          "TestUser",
 	FollowCount:   0,
@@ -44,9 +30,36 @@ var DemoUser = User{
 
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
-	c.JSON(http.StatusOK, FeedResponse{
-		Response:  Response{StatusCode: 0},
-		VideoList: DemoVideos,
+
+	id := (int64(2))
+
+	video := models.QueryVideoByVideoId(id)
+
+	Author := models.QueryUserInfoByID(id)
+
+	var AuthorUser = json_response.User{
+		Id:            Author.UserID,
+		Name:          Author.UserName,
+		FollowCount:   Author.UserFollowCount,
+		FollowerCount: Author.UserFollowerCount,
+		IsFollow:      false,
+	}
+
+	var testVideos = []json_response.Video{
+		{
+			Id:            video.ID,
+			Author:        AuthorUser,
+			PlayUrl:       video.PlayURL,
+			CoverUrl:      video.CoverURL,
+			FavoriteCount: video.FavoriteCount,
+			CommentCount:  video.CommentCount,
+			IsFavorite:    false,
+		},
+	}
+
+	c.JSON(http.StatusOK, json_response.FeedResponse{
+		Response:  json_response.Response{StatusCode: 0},
+		VideoList: testVideos,
 		NextTime:  time.Now().Unix(),
 	})
 }
