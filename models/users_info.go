@@ -4,31 +4,35 @@ import (
 	"strings"
 )
 
-type UserInfoModel struct {
-	UserID            int64  `gorm:"column:ID"`            // 用户id
-	UserName          string `gorm:"column:Name"`          // 用户名称
-	UserPwd           string `gorm:"column:Pwd"`           // 用户密码
-	UserFollowCount   int64  `gorm:"column:FollowCount"`   // 用户关注数
-	UserFollowerCount int64  `gorm:"column:FollowerCount"` // 用户粉丝数
+type UserInfo struct {
+	UserID            int64  `gorm:"column:UserID" json:"id,omitempty"`                   // 用户id
+	UserName          string `gorm:"column:Name"json:"name,omitempty"`                    // 用户名称
+	UserFollowCount   int    `gorm:"column:FollowCount"json:"follow_count,omitempty"`     // 用户关注数
+	UserFollowerCount int    `gorm:"column:FollowerCount"json:"follower_count,omitempty"` // 用户粉丝数
+	IsFollow          bool   `gorm:"column:IsFollow"json:"is_follow,omitempty"`           // 是否关注
 }
 
-func UserSearch(token string) UserModel {
+func (value UserInfo) TableName() string {
+	return "UsersInfo"
+}
+
+func QueryUserInfoByToken(token string) (UserInfo, error) {
 
 	str := strings.Split(token, "-")
 
-	name := str[0]
+	UserID := str[0]
 
-	var user UserModel
+	var userInfo UserInfo
 
-	DB.Select("ID, FollowCount, FollowerCount").Where("`Name` = ?", name).First(&user)
+	err := DB.Select("UserID, FollowCount, FollowerCount, IsFollow").Where("UserID = ?", UserID).First(&userInfo).Error
 
-	return user
+	return userInfo, err
 }
 
-func QueryUserInfoByID(ID int64) UserInfoModel {
-	var userInfo UserInfoModel
+func QueryUserInfoByID(ID int64) (UserInfo, error) {
+	var userInfo UserInfo
 
-	DB.Select("ID, FollowCount, FollowerCount").Where("ID = ?", ID).First(&userInfo)
+	err := DB.Select("UserID, FollowCount, FollowerCount, IsFollow").Where("UserID = ?", ID).First(&userInfo).Error
 
-	return userInfo
+	return userInfo, err
 }
