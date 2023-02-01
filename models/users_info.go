@@ -36,3 +36,25 @@ func QueryUserInfoByID(ID int64) (UserInfo, error) {
 
 	return userInfo, err
 }
+
+func QueryFollowInfoListByToken(token string) ([]UserInfo, error) {
+
+	tableName := token + "-follow"
+
+	var FollowInfoList []UserInfo
+
+	err := DB.Table(tableName).Select("UserID, FollowCount, FollowerCount, IsFollow").Find(&FollowInfoList).Error
+
+	return FollowInfoList, err
+}
+
+func QueryFollowerInfoListByToken(token string) ([]UserInfo, error) {
+
+	tableName := token + "-follower"
+
+	var FollowerInfoList []UserInfo
+
+	err := DB.Table(tableName).Select("UserID, FollowCount, FollowerCount, IsFollow").Find(&FollowerInfoList).Error
+
+	return FollowerInfoList, err
+}

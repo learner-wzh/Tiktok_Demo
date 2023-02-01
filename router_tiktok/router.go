@@ -3,6 +3,7 @@ package router_tiktok
 import (
 	"github.com/gin-gonic/gin"
 	"tiktok_Demo/controllers/basic"
+	"tiktok_Demo/controllers/socializing"
 	"tiktok_Demo/models"
 )
 
@@ -31,8 +32,8 @@ func InitRouter() *gin.Engine {
 
 	// 社交接口
 	apiRouter.POST("/relation/action/")
-	apiRouter.GET("/relation/follow/list/")
-	apiRouter.GET("/relation/follower/list/")
+	apiRouter.GET("/relation/follow/list/", socializing.FollowList)
+	apiRouter.GET("/relation/follower/list/", socializing.FollowerList)
 	apiRouter.GET("/relation/friend/list/")
 	apiRouter.GET("/message/chat/")
 	apiRouter.POST("/message/action/")
