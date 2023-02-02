@@ -44,6 +44,12 @@ func FollowAction(c *gin.Context) {
 	} else if actionType == "2" {
 		// 取消关注
 		fmt.Println("取消关注")
+		models.DeleteFollowInfoListByToken(token, toUserID)
+		err := models.DeleteFollowerInfoListByToken(token, toUserID)
+		if err == nil {
+			isFollower := models.QueryUserInfoInFollowerListByToken(token, toUserID)
+			models.UpdateFollowerInfoListByToken(token, toUserID, !isFollower)
+		}
 	}
 }
 

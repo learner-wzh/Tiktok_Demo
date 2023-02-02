@@ -191,3 +191,24 @@ func UpdateFollowerInfoListByToken(token string, toUserID string, isFollower boo
 
 	log.Println(err)
 }
+
+func DeleteFollowInfoListByToken(token string, toUserID string) {
+	followID, _ := strconv.ParseInt(toUserID, 10, 64)
+	tableName := token + "-follow"
+
+	err := DB.Table(tableName).Delete(&UserInfo{}, followID).Error
+
+	log.Println(err)
+}
+
+func DeleteFollowerInfoListByToken(token string, toUserID string) error {
+	strArray := strings.Split(token, "-")
+	ID := strArray[0]
+	followerID, _ := strconv.ParseInt(ID, 10, 64)
+
+	followName, _ := QueryUserInfoNameByID(toUserID)
+
+	tableName := toUserID + "-" + followName + "-follower"
+
+	return DB.Table(tableName).Delete(&UserInfo{}, followerID).Error
+}
