@@ -22,6 +22,11 @@ type FriendListResponse struct {
 	FriendList []models.UserInfo `json:"user_list"` // 用户信息列表
 }
 
+type UserListResponse struct {
+	models.Response
+	UserList []models.UserInfo `json:"user_list"`
+}
+
 func FollowAction(c *gin.Context) {
 	token := c.Query("token")
 	toUserID := c.Query("to_user_id")
@@ -88,10 +93,14 @@ func FriendList(c *gin.Context) {
 	fmt.Println("friendList")
 
 	userFriendList, err := models.QueryFriendInfoListByToken(token)
+
+	fmt.Println(userFriendList)
+
 	if err == nil {
-		fmt.Println(userFriendList)
 		c.JSON(http.StatusOK, FriendListResponse{
-			Response:   models.Response{StatusCode: 0},
+			Response: models.Response{
+				StatusCode: 0,
+			},
 			FriendList: userFriendList,
 		})
 	}

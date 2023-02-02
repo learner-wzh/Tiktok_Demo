@@ -35,8 +35,8 @@ func InitRouter() *gin.Engine {
 	apiRouter.GET("/relation/follow/list/", socializing.FollowList)
 	apiRouter.GET("/relation/follower/list/", socializing.FollowerList)
 	apiRouter.GET("/relation/friend/list/", socializing.FriendList)
-	apiRouter.GET("/message/chat/")
-	apiRouter.POST("/message/action/")
+	apiRouter.GET("/message/chat/", socializing.ChatHistory)
+	apiRouter.POST("/message/action/", socializing.ChatAction)
 
 	return r
 }
