@@ -31,10 +31,10 @@ func InitRouter() *gin.Engine {
 	apiRouter.GET("/comment/list/")
 
 	// 社交接口
-	apiRouter.POST("/relation/action/")
+	apiRouter.POST("/relation/action/", socializing.FollowAction)
 	apiRouter.GET("/relation/follow/list/", socializing.FollowList)
 	apiRouter.GET("/relation/follower/list/", socializing.FollowerList)
-	apiRouter.GET("/relation/friend/list/")
+	apiRouter.GET("/relation/friend/list/", socializing.FriendList)
 	apiRouter.GET("/message/chat/")
 	apiRouter.POST("/message/action/")
 
