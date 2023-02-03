@@ -3,7 +3,9 @@ package basic
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"tiktok_Demo/models"
+	"time"
 )
 
 type FeedResponse struct {
@@ -12,17 +14,22 @@ type FeedResponse struct {
 	NextTime  int64          `json:"next_time,omitempty"`
 }
 
-// Feed same demo video list for every request
 func Feed(c *gin.Context) {
-	token := c.Query("token")
-	latestTime := c.Query("latest_time")
+	//token := c.Query("token")
+	//latestTime := c.Query("latest_time")
 
-	fmt.Println(token)
-	fmt.Println(latestTime)
+	video, err := models.ReturnVideoInRand()
+	var videoList []models.Video
 
-	//c.JSON(http.StatusOK, FeedResponse{
-	//	Response:  models.Response{StatusCode: 0},
-	//	VideoList: ,
-	//	NextTime:  time.Now().Unix(),
-	//})
+	videoList = append(videoList, video)
+
+	if err == nil {
+		fmt.Println(video)
+	}
+
+	c.JSON(http.StatusOK, FeedResponse{
+		Response:  models.Response{StatusCode: 0},
+		VideoList: videoList,
+		NextTime:  time.Now().Unix(),
+	})
 }

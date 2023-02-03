@@ -39,7 +39,6 @@ func QueryVideoCountByUserId(userId int64) (int64, error) {
 }
 
 func QueryVideoListByToken(token string) []Video {
-
 	strArray := strings.Split(token, "-")
 	userId := strArray[0]
 
@@ -53,4 +52,15 @@ func QueryVideoListByUserId(userId int64) ([]Video, error) {
 	var videoList []Video
 	err := DB.Select("VideoID", "UserID", "Title", "CommentCount", "FavoriteCount", "CoverURL", "PlayURL").Where("UserID=?", userId).Find(&videoList).Error
 	return videoList, err
+}
+
+func ReturnVideoInRand() (Video, error) {
+	var video Video
+	err := DB.Raw("SELECT * FROM Videos AS v1 JOIN (SELECT ROUND(RAND()*(SELECT MAX(VideoID) " +
+		"FROM Videos)) AS VideoID) AS v2 WHERE v1.VideoID>=v2.VideoID ORDER BY v1.VideoID LIMIT 1").Scan(&video).Error
+	userID := video.UserID
+	userInfo, _ := QueryUserInfoByID(userID)
+	video.Author = userInfo
+
+	return video, err
 }
