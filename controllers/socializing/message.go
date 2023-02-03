@@ -1,7 +1,6 @@
 package socializing
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"tiktok_Demo/models"
@@ -21,10 +20,8 @@ func ChatAction(c *gin.Context) {
 
 	Count, err := models.QueryMessageListCountByTokenAndUserID(token, toUserId)
 	if err == nil {
-
-		fmt.Println(Count)
-		fmt.Println(content)
-		fmt.Println(timeStr)
+		models.InsertOwnerMessageList(token, Count, toUserId, content, timeStr)
+		models.InsertToUserIDMessageList(token, Count, toUserId, content, timeStr)
 	}
 
 }
