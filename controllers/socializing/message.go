@@ -3,24 +3,48 @@ package socializing
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"tiktok_Demo/models"
+	"time"
 )
+
+type ChatResponse struct {
+	models.Response
+	MessageList []models.Message `json:"message_list"`
+}
 
 func ChatAction(c *gin.Context) {
 	token := c.Query("token")
 	toUserId := c.Query("to_user_id")
-	actionType := c.Query("action_type")
 	content := c.Query("content")
+	timeStr := time.Now().Format("2006-01-02 15:04:05")
 
-	fmt.Println(token)
-	fmt.Println(toUserId)
-	fmt.Println(actionType)
-	fmt.Println(content)
+	Count, err := models.QueryMessageListCountByTokenAndUserID(token, toUserId)
+	if err == nil {
+
+		fmt.Println(Count)
+		fmt.Println(content)
+		fmt.Println(timeStr)
+	}
+
 }
 
 func ChatHistory(c *gin.Context) {
 	token := c.Query("token")
 	toUserId := c.Query("to_user_id")
 
-	fmt.Println(token)
-	fmt.Println(toUserId)
+	MessageList, err := models.QueryMessageListByTokenAndUserID(token, toUserId)
+
+	if err == nil {
+		c.JSON(http.StatusOK, ChatResponse{
+			Response:    models.Response{StatusCode: 0},
+			MessageList: MessageList,
+		})
+	} else {
+		c.JSON(http.StatusOK, models.Response{
+			StatusCode: 1,
+			StatusMsg:  "User doesn't exist",
+		})
+	}
+
 }

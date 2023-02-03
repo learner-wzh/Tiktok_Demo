@@ -101,7 +101,7 @@ func QueryFollowInfoListByToken(token string) ([]UserInfo, error) {
 
 	var FollowInfoList []UserInfo
 
-	err := DB.Table(tableName).Select("UserID, FollowCount, FollowerCount, IsFollow").Find(&FollowInfoList).Error
+	err := DB.Table(tableName).Select("UserID, Name, FollowCount, FollowerCount, IsFollow").Find(&FollowInfoList).Error
 
 	return FollowInfoList, err
 }
@@ -112,7 +112,7 @@ func QueryFollowerInfoListByToken(token string) ([]UserInfo, error) {
 
 	var FollowerInfoList []UserInfo
 
-	err := DB.Table(tableName).Select("UserID, FollowCount, FollowerCount, IsFollow").Find(&FollowerInfoList).Error
+	err := DB.Table(tableName).Select("UserID, Name, FollowCount, FollowerCount, IsFollow").Find(&FollowerInfoList).Error
 
 	return FollowerInfoList, err
 }
@@ -122,7 +122,7 @@ func QueryFriendInfoListByToken(token string) ([]UserInfo, error) {
 
 	var FriendInfoList []UserInfo
 
-	err := DB.Table(tableName).Select("UserID, FollowCount, FollowerCount, IsFollow").Where("IsFollow = 1").Find(&FriendInfoList).Error
+	err := DB.Table(tableName).Select("UserID, Name, FollowCount, FollowerCount, IsFollow").Where("IsFollow = 1").Find(&FriendInfoList).Error
 
 	return FriendInfoList, err
 }
