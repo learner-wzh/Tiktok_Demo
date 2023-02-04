@@ -1,6 +1,10 @@
 package models
 
-import "strings"
+import (
+	"gorm.io/gorm"
+	"strconv"
+	"strings"
+)
 
 // Video 数据结构
 type Video struct {
@@ -27,7 +31,7 @@ func AddVideo(video Video) error {
 // QueryVideoByVideoId API：根据视频唯一标识查找视频
 func QueryVideoByVideoId(videoId int64) Video {
 	var video Video
-	DB.Select("VideoID", "UserID", "Title", "CommentCount", "FavoriteCount", "CoverURL", "PlayURL").Where("VideoID=?", videoId).First(&video)
+	DB.Select("VideoID", "UserID", "Title", "CommentCount", "FavoriteCount", "CoverURL", "PlayURL", "IsFavorite").Where("VideoID=?", videoId).First(&video)
 	return video
 }
 
@@ -63,4 +67,39 @@ func ReturnVideoInRand() (Video, error) {
 	video.Author = userInfo
 
 	return video, err
+}
+
+func PlusOneFavorByVideoId(videoId string) error {
+	videoID, _ := strconv.ParseInt(videoId, 10, 64)
+
+	var video Video
+	err := DB.Model(&video).Where("VideoID = ?", videoID).UpdateColumn("FavoriteCount", gorm.Expr("FavoriteCount + ?", 1)).Error
+
+	return err
+}
+
+func MinusOneFavorByVideoId(videoId string) error {
+	videoID, _ := strconv.ParseInt(videoId, 10, 64)
+
+	var video Video
+	err := DB.Model(&video).Where("VideoID = ? AND FavoriteCount > 0", videoID).UpdateColumn("FavoriteCount", gorm.Expr("FavoriteCount - ?", 1)).Error
+
+	return err
+}
+
+func InsertVideoInToFavorListByTokenAndVideoID(token string, videoId string) error {
+	tableName := token + "-favorite"
+	videoID, _ := strconv.ParseInt(videoId, 10, 64)
+
+	video := QueryVideoByVideoId(videoID)
+	video.IsFavorite = true
+	return DB.Table(tableName).Create(&video).Error
+}
+
+func DeleteVideoFormFavorListByTokenAndVideoID(token string, videoId string) error {
+	tableName := token + "-favorite"
+	videoID, _ := strconv.ParseInt(videoId, 10, 64)
+
+	var video Video
+	return DB.Table(tableName).Where("VideoID = ?", videoID).Delete(&video).Error
 }

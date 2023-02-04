@@ -3,6 +3,7 @@ package router_tiktok
 import (
 	"github.com/gin-gonic/gin"
 	"tiktok_Demo/controllers/basic"
+	"tiktok_Demo/controllers/interact"
 	"tiktok_Demo/controllers/socializing"
 	"tiktok_Demo/models"
 )
@@ -25,8 +26,8 @@ func InitRouter() *gin.Engine {
 	apiRouter.GET("/publish/list/", basic.PublishList)
 
 	// 互动接口
-	apiRouter.POST("/favorite/action/")
-	apiRouter.GET("/favorite/list/")
+	apiRouter.POST("/favorite/action/", interact.FavoriteAction)
+	apiRouter.GET("/favorite/list/", interact.FavoriteList)
 	apiRouter.POST("/comment/action/")
 	apiRouter.GET("/comment/list/")
 
