@@ -103,3 +103,16 @@ func DeleteVideoFormFavorListByTokenAndVideoID(token string, videoId string) err
 	var video Video
 	return DB.Table(tableName).Where("VideoID = ?", videoID).Delete(&video).Error
 }
+
+func QueryFavorListByToken(token string) ([]Video, error) {
+	tableName := token + "-favorite"
+	var videoList []Video
+	err := DB.Table(tableName).Select("VideoID, UserID, Title, CommentCount, FavoriteCount, CoverURL, PlayURL, IsFavorite").Find(&videoList).Error
+
+	for _, video := range videoList {
+		UserID := video.UserID
+		video.Author, _ = QueryUserInfoByID(UserID)
+	}
+
+	return videoList, err
+}

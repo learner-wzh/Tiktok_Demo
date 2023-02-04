@@ -1,11 +1,15 @@
 package interact
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"tiktok_Demo/models"
 )
+
+type VideoListResponse struct {
+	models.Response
+	VideoList []models.Video `json:"video_list"`
+}
 
 func FavoriteAction(c *gin.Context) {
 	token := c.Query("token")
@@ -36,8 +40,23 @@ func FavoriteAction(c *gin.Context) {
 
 func FavoriteList(c *gin.Context) {
 	token := c.Query("token")
-	userID := c.Query("user_id")
 
-	fmt.Println(token)
-	fmt.Println(userID)
+	videoList, err := models.QueryFavorListByToken(token)
+
+	if err == nil {
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response: models.Response{
+				StatusCode: 0,
+			},
+			VideoList: videoList,
+		})
+	} else {
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response: models.Response{
+				StatusCode: 1,
+				StatusMsg:  "喜欢列表返回失败",
+			},
+			VideoList: nil,
+		})
+	}
 }
