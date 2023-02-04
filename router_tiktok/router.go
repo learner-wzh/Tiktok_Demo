@@ -28,8 +28,8 @@ func InitRouter() *gin.Engine {
 	// 互动接口
 	apiRouter.POST("/favorite/action/", interact.FavoriteAction)
 	apiRouter.GET("/favorite/list/", interact.FavoriteList)
-	apiRouter.POST("/comment/action/")
-	apiRouter.GET("/comment/list/")
+	apiRouter.POST("/comment/action/", interact.CommentAction)
+	apiRouter.GET("/comment/list/", interact.CommentList)
 
 	// 社交接口
 	apiRouter.POST("/relation/action/", socializing.FollowAction)

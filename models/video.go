@@ -3,7 +3,6 @@ package models
 import (
 	"gorm.io/gorm"
 	"strconv"
-	"strings"
 )
 
 // Video 数据结构
@@ -33,22 +32,6 @@ func QueryVideoByVideoId(videoId int64) Video {
 	var video Video
 	DB.Select("VideoID", "UserID", "Title", "CommentCount", "FavoriteCount", "CoverURL", "PlayURL", "IsFavorite").Where("VideoID=?", videoId).First(&video)
 	return video
-}
-
-// QueryVideoCountByUserId API：根据作者唯一标识返回作者作品个数
-func QueryVideoCountByUserId(userId int64) (int64, error) {
-	var count int64
-	err := DB.Model(&Video{}).Where("UserID=?", userId).Count(&count).Error
-	return count, err
-}
-
-func QueryVideoListByToken(token string) []Video {
-	strArray := strings.Split(token, "-")
-	userId := strArray[0]
-
-	var videoList []Video
-	DB.Select("VideoID", "UserID", "Title", "CommentCount", "FavoriteCount", "CoverURL", "PlayURL").Where("UserID=?", userId).Find(&videoList)
-	return videoList
 }
 
 // QueryVideoListByUserId API：根据作者唯一标识查找返回相关视频列表
