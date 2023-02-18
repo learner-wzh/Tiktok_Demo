@@ -53,7 +53,7 @@ func GetSnapshot(videoPath, snapshotPath string, frameNum int) (ImagePath string
 }
 
 // 将视频文件上传到阿里云oss
-func UploadVideoToAliyunOss(file *multipart.FileHeader, token string, title string) error {
+func UploadVideoToAliyunOss(file *multipart.FileHeader, token string, title string) (string, error) {
 	bucket := models.InitBucket
 
 	src, err := file.Open()
@@ -69,25 +69,32 @@ func UploadVideoToAliyunOss(file *multipart.FileHeader, token string, title stri
 		filename = fmt.Sprintf("%d_%s", user.UserID, file.Filename)
 	}
 
-	// 将文件流上传至test目录下
+	// 将视频流上传至videos目录下
 	path := "videos/" + filename
 	err = bucket.PutObject(path, src)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+
+	// 获取对应视频流的URL
+	VideoUrl := "https://tiktok-wzh.oss-cn-hangzhou.aliyuncs.com/videos/" + filename
+
+	return VideoUrl, nil
 }
 
 // 将视频封面文件上传到阿里云oss
-func UploadImageToAliyunOss(imagePath string, imageName string) error {
+func UploadImageToAliyunOss(imagePath string, imageName string) (string, error) {
 	bucket := models.InitBucket
 
 	path := "images/" + imageName
 	err := bucket.PutObjectFromFile(path, imagePath)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+
+	// 获取对应封面的URL
+	ImageUrl := "https://tiktok-wzh.oss-cn-hangzhou.aliyuncs.com/images/" + imageName
+	return ImageUrl, nil
 }
 
 func Publish(c *gin.Context) {
@@ -104,8 +111,10 @@ func Publish(c *gin.Context) {
 	}
 
 	filename := filepath.Base(data.Filename)
+	videoUrl, err := UploadVideoToAliyunOss(data, token, title)
+	fmt.Println("视频URL:" + videoUrl)
 
-	if err := UploadVideoToAliyunOss(data, token, title); err != nil {
+	if err != nil {
 		c.JSON(http.StatusOK, models.Response{
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
@@ -131,7 +140,9 @@ func Publish(c *gin.Context) {
 		imagePath, _ := GetSnapshot(saveFile, ImageName, 1)
 		imageName := ImageName + ".png"
 
-		if err := UploadImageToAliyunOss(imagePath, imageName); err != nil {
+		imageUrl, err := UploadImageToAliyunOss(imagePath, imageName)
+		fmt.Println("封面URL:" + imageUrl)
+		if err != nil {
 			c.JSON(http.StatusOK, models.Response{
 				StatusCode: 1,
 				StatusMsg:  err.Error(),
