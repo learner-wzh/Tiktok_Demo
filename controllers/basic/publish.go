@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -51,6 +52,44 @@ func GetSnapshot(videoPath, snapshotPath string, frameNum int) (ImagePath string
 	return imgPath, nil
 }
 
+// 将视频文件上传到阿里云oss
+func UploadVideoToAliyunOss(file *multipart.FileHeader, token string, title string) error {
+	bucket := models.InitBucket
+
+	src, err := file.Open()
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(-1)
+	}
+	defer src.Close()
+
+	user, err := models.QueryUserInfoByToken(token)
+	var filename string
+	if err == nil {
+		filename = fmt.Sprintf("%d_%s", user.UserID, file.Filename)
+	}
+
+	// 将文件流上传至test目录下
+	path := "videos/" + filename
+	err = bucket.PutObject(path, src)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 将视频封面文件上传到阿里云oss
+func UploadImageToAliyunOss(imagePath string, imageName string) error {
+	bucket := models.InitBucket
+
+	path := "images/" + imageName
+	err := bucket.PutObjectFromFile(path, imagePath)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func Publish(c *gin.Context) {
 	token := c.PostForm("token")
 	title := c.PostForm("title")
@@ -66,25 +105,33 @@ func Publish(c *gin.Context) {
 
 	filename := filepath.Base(data.Filename)
 
-	user, err := models.QueryUserInfoByToken(token)
-	if err == nil {
+	if err := UploadVideoToAliyunOss(data, token, title); err != nil {
+		c.JSON(http.StatusOK, models.Response{
+			StatusCode: 1,
+			StatusMsg:  err.Error(),
+		})
+		return
+	}
+
+	if user, err := models.QueryUserInfoByToken(token); err == nil {
 		finalName := fmt.Sprintf("%d_%s", user.UserID, filename)
 		saveFile := filepath.Join("/root/video", finalName)
 
 		strArray := strings.Split(finalName, ".")
 		ImageName := strArray[0]
 
-		imagePath, _ := GetSnapshot(saveFile, ImageName, 1)
-
-		var video models.Video
-		video.CoverURL = imagePath
-		video.PlayURL = saveFile
-		video.Title = title
-		video.UserID = user.UserID
-		models.AddVideo(video)
-
 		if err := c.SaveUploadedFile(data, saveFile); err != nil {
+			c.JSON(http.StatusOK, models.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			})
+			return
+		}
 
+		imagePath, _ := GetSnapshot(saveFile, ImageName, 1)
+		imageName := ImageName + ".png"
+
+		if err := UploadImageToAliyunOss(imagePath, imageName); err != nil {
 			c.JSON(http.StatusOK, models.Response{
 				StatusCode: 1,
 				StatusMsg:  err.Error(),

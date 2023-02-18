@@ -14,7 +14,9 @@ loc = "Local"
 ip = "121.41.102.241"
 port = 8080
 
-#用于保存资源的路径，以及用于截图工具的路径（截图工具放在lib目录
-[path]
-ffmpeg_path = "ffmpeg"
-static_source_path = "/home/ubuntu/goland_pro/byte_douyin_project/static"
+#阿里云对象存储 tiktok-wzh
+[oss]
+Endpoint = "https://oss-cn-hangzhou.aliyuncs.com"
+AccessKeyID  = "LTAI5tBm9MPHibGVcU76z9QB"
+AccessKeySecret = "1fAC3US6DBIR5q2Crc0zVeeyFvg1SR"
+Bucket = "tiktok-wzh"

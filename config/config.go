@@ -23,15 +23,17 @@ type Server struct {
 	Port int
 }
 
-type Path struct {
-	FfmpegPath       string `toml:"ffmpeg_path"`
-	StaticSourcePath string `toml:"static_source_path"`
+type Oss struct {
+	Endpoint        string
+	AccessKeyID     string
+	AccessKeySecret string
+	Bucket          string
 }
 
 type Config struct {
 	DB     Mysql `toml:"mysql"`
 	Server `toml:"server"`
-	Path   `toml:"path"`
+	Oss    `toml:"oss"`
 }
 
 var Info Config
@@ -44,6 +46,7 @@ func init() {
 	//去除左右的空格
 	strings.Trim(Info.Server.IP, " ")
 	strings.Trim(Info.DB.Host, " ")
+	strings.Trim(Info.Oss.Endpoint, " ")
 }
 
 // DBConnectString 填充得到数据库连接字符串
@@ -53,4 +56,8 @@ func DBConnectString() string {
 		Info.DB.Charset, Info.DB.ParseTime, Info.DB.Loc)
 	log.Println(arg)
 	return arg
+}
+
+func ReturnConfig() Config {
+	return Info
 }
