@@ -28,6 +28,8 @@ type Oss struct {
 	AccessKeyID     string
 	AccessKeySecret string
 	Bucket          string
+	VideoUrl        string
+	ImageUrl        string
 }
 
 type Config struct {
@@ -60,4 +62,8 @@ func DBConnectString() string {
 
 func ReturnConfig() Config {
 	return Info
+}
+
+func ReturnOss() Oss {
+	return Info.Oss
 }

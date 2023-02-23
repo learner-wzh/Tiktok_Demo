@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"tiktok_Demo/config"
 	"tiktok_Demo/models"
 )
 
@@ -53,13 +54,13 @@ func GetSnapshot(videoPath, snapshotPath string, frameNum int) (ImagePath string
 }
 
 // 将视频文件上传到阿里云oss
-func UploadVideoToAliyunOss(file *multipart.FileHeader, token string, title string) (string, error) {
+func UploadVideoToAliyunOss(file *multipart.FileHeader, token string) (string, error) {
 	bucket := models.InitBucket
+	oss := config.ReturnOss()
 
 	src, err := file.Open()
 	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(-1)
+		return "", err
 	}
 	defer src.Close()
 
@@ -77,7 +78,7 @@ func UploadVideoToAliyunOss(file *multipart.FileHeader, token string, title stri
 	}
 
 	// 获取对应视频流的URL
-	VideoUrl := "https://tiktok-wzh.oss-cn-hangzhou.aliyuncs.com/videos/" + filename
+	VideoUrl := oss.VideoUrl + filename
 
 	return VideoUrl, nil
 }
@@ -85,6 +86,7 @@ func UploadVideoToAliyunOss(file *multipart.FileHeader, token string, title stri
 // 将视频封面文件上传到阿里云oss
 func UploadImageToAliyunOss(imagePath string, imageName string) (string, error) {
 	bucket := models.InitBucket
+	oss := config.ReturnOss()
 
 	path := "images/" + imageName
 	err := bucket.PutObjectFromFile(path, imagePath)
@@ -93,7 +95,7 @@ func UploadImageToAliyunOss(imagePath string, imageName string) (string, error) 
 	}
 
 	// 获取对应封面的URL
-	ImageUrl := "https://tiktok-wzh.oss-cn-hangzhou.aliyuncs.com/images/" + imageName
+	ImageUrl := oss.ImageUrl + imageName
 	return ImageUrl, nil
 }
 
@@ -111,8 +113,7 @@ func Publish(c *gin.Context) {
 	}
 
 	filename := filepath.Base(data.Filename)
-	videoUrl, err := UploadVideoToAliyunOss(data, token, title)
-	fmt.Println("视频URL:" + videoUrl)
+	videoUrl, err := UploadVideoToAliyunOss(data, token)
 
 	if err != nil {
 		c.JSON(http.StatusOK, models.Response{
@@ -141,7 +142,14 @@ func Publish(c *gin.Context) {
 		imageName := ImageName + ".png"
 
 		imageUrl, err := UploadImageToAliyunOss(imagePath, imageName)
-		fmt.Println("封面URL:" + imageUrl)
+
+		var video models.Video
+		video.CoverURL = imageUrl
+		video.PlayURL = videoUrl
+		video.Title = title
+		video.UserID = user.UserID
+		models.AddVideo(video)
+
 		if err != nil {
 			c.JSON(http.StatusOK, models.Response{
 				StatusCode: 1,
